@@ -21,11 +21,11 @@ const STATUS_VARIANT = {
 
 const CREW_COLORS: Record<string, string> = {
   default: 'text-accent',
-  plc:     'text-orange-400',
-  react:   'text-blue-400',
+  plc:     'text-violet',
+  react:   'text-sky-400',
   vision:  'text-pink-400',
-  safety:  'text-yellow-400',
-  ops:     'text-teal-400',
+  safety:  'text-success',
+  ops:     'text-warning',
 }
 
 export function RunCard({ run, index }: RunCardProps) {
@@ -39,8 +39,8 @@ export function RunCard({ run, index }: RunCardProps) {
     >
       <Card
         className={cn(
-          'cursor-pointer hover:border-border-bright hover:bg-elevated transition-all duration-200',
-          run.status === 'running' && 'border-running/30 glow-running',
+          'cursor-pointer hover:border-border-bright transition-all duration-200',
+          run.status === 'running' && 'border-accent/30 glow-running',
           run.status === 'error'   && 'border-error/30',
         )}
         onClick={() => navigate(`/run/${run.run_id}`)}
@@ -49,7 +49,7 @@ export function RunCard({ run, index }: RunCardProps) {
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className={cn('text-xs font-semibold uppercase tracking-wider', CREW_COLORS[run.crew] ?? 'text-text-muted')}>
+                <span className={cn('eyebrow', CREW_COLORS[run.crew] ?? 'text-text-muted')}>
                   {run.crew}
                 </span>
                 <Badge variant={STATUS_VARIANT[run.status]} pulse={run.status === 'running' || run.status === 'starting'}>
@@ -59,7 +59,7 @@ export function RunCard({ run, index }: RunCardProps) {
               <p className="text-sm text-text-primary line-clamp-2 leading-snug">
                 {run.goal}
               </p>
-              <div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
+              <div className="flex items-center gap-3 mt-2 text-xs text-text-muted font-mono">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {timeAgo(run.startedAt)}

@@ -43,7 +43,7 @@ export function StatusIndicator() {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.15 }}
           className={cn(
-            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border',
+            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border',
             system.online
               ? 'bg-success/8 border-success/20 text-success'
               : 'bg-error/8 border-error/20 text-error'
@@ -54,7 +54,7 @@ export function StatusIndicator() {
           ) : (
             <WifiOff className="h-3 w-3" />
           )}
-          {system.online ? 'Connected' : 'Offline'}
+          {system.online ? 'connected' : 'offline'}
         </motion.div>
       </AnimatePresence>
 
@@ -67,14 +67,14 @@ export function StatusIndicator() {
             transition={{ duration: 0.15 }}
             onClick={copyCommand}
             className={cn(
-              'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border transition-all duration-150',
+              'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border transition-all duration-150',
               copied
                 ? 'bg-success/10 border-success/30 text-success'
                 : 'bg-accent/10 border-accent/30 text-accent hover:bg-accent/20'
             )}
           >
             <Terminal className="h-3 w-3" />
-            {copied ? 'Copied!' : 'Go online'}
+            {copied ? 'copied!' : 'go online'}
           </motion.button>
         )}
       </AnimatePresence>
@@ -84,14 +84,14 @@ export function StatusIndicator() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className={cn(
-            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border',
+            'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border',
             system.ollama
-              ? 'bg-running/8 border-running/20 text-running'
+              ? 'bg-accent/8 border-accent/20 text-accent'
               : 'bg-warning/8 border-warning/20 text-warning'
           )}
         >
           <Cpu className="h-3 w-3" />
-          Ollama {system.ollama ? 'ready' : 'offline'}
+          ollama {system.ollama ? 'ready' : 'offline'}
         </motion.div>
       )}
     </div>

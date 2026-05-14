@@ -1,15 +1,18 @@
 import * as React from 'react'
 import { cn } from '../../lib/utils'
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-surface transition-all duration-200',
+        'relative rounded-xl border border-border bg-surface/80 backdrop-blur-sm overflow-hidden transition-all duration-200',
         className
       )}
       {...props}
-    />
+    >
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-accent/40 to-violet/40" aria-hidden="true" />
+      {children}
+    </div>
   )
 }
 

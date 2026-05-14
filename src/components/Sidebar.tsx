@@ -15,13 +15,13 @@ export function Sidebar() {
   const active = Object.values(runs).filter((r) => r.status === 'running' || r.status === 'starting').length
 
   return (
-    <aside className="flex flex-col w-56 bg-surface border-r border-border h-full shrink-0">
+    <aside className="relative z-10 flex flex-col w-56 bg-surface/80 backdrop-blur-sm border-r border-border h-full shrink-0">
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-border">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/20 border border-accent/30">
-          <Zap className="h-3.5 w-3.5 text-accent" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent/20 to-violet/20 border border-accent/30">
+          <Zap className="h-4 w-4 text-accent" />
         </div>
-        <span className="text-sm font-semibold text-text-primary tracking-tight">
-          Smith Agentic
+        <span className="font-display text-sm font-semibold tracking-tight">
+          Smith<span className="text-text-dim">_</span><span className="gradient-text">Agentic</span>
         </span>
       </div>
 
@@ -35,14 +35,14 @@ export function Sidebar() {
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150 select-none cursor-pointer',
                   isActive
-                    ? 'bg-accent/15 text-accent border border-accent/20'
+                    ? 'bg-accent/10 text-accent border border-accent/20'
                     : 'text-text-muted hover:bg-elevated hover:text-text-primary'
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
                 <span>{label}</span>
                 {label === 'Dashboard' && active > 0 && (
-                  <span className="ml-auto flex h-4 w-4 items-center justify-center rounded-full bg-running/20 text-[10px] font-semibold text-running">
+                  <span className="ml-auto flex h-4 w-4 items-center justify-center rounded-full bg-accent/20 text-[10px] font-semibold text-accent">
                     {active}
                   </span>
                 )}
@@ -53,7 +53,7 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-border">
-        <p className="text-[10px] text-text-dim text-center">localhost:8765</p>
+        <p className="eyebrow text-center opacity-40">localhost:8765</p>
       </div>
     </aside>
   )

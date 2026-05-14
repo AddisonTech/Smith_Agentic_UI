@@ -58,13 +58,11 @@ export function RunDetail() {
 
   useEffect(() => {
     if (!id) return
-    // If run isn't in store yet, try fetching it
     if (!run) {
       api.getRun(id)
         .then((data) => upsertRun(data))
         .catch(() => {})
     }
-    // Only connect WS if run might still be active
     const storedRun = runs[id]
     if (!storedRun || storedRun.status === 'starting' || storedRun.status === 'running') {
       const ws = connectWs()
@@ -114,23 +112,23 @@ export function RunDetail() {
         </Button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="text-xs font-semibold text-accent uppercase tracking-wider">{run.crew}</span>
+            <span className="eyebrow text-accent">{run.crew}</span>
             <Badge variant={STATUS_VARIANT[run.status]} pulse={isActive}>
               {run.status}
             </Badge>
             {run.endedAt && (
-              <span className="text-xs text-text-muted">
+              <span className="text-xs font-mono text-text-muted">
                 {duration(run.startedAt, run.endedAt)}
               </span>
             )}
             {isActive && (
-              <span className="text-xs text-text-muted">
+              <span className="text-xs font-mono text-text-muted">
                 {duration(run.startedAt)} elapsed
               </span>
             )}
           </div>
           <p className="text-sm text-text-primary mt-1 leading-snug">{run.goal}</p>
-          <p className="text-xs text-text-dim mt-0.5 font-mono">{run.run_id}</p>
+          <p className="eyebrow mt-0.5 opacity-30">{run.run_id}</p>
         </div>
       </motion.div>
 

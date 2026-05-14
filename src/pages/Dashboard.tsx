@@ -25,9 +25,9 @@ export function Dashboard() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-xl font-semibold text-text-primary">Dashboard</h1>
-          <p className="text-sm text-text-muted mt-0.5">
-            {runList.length === 0 ? 'No runs yet' : `${runList.length} total run${runList.length !== 1 ? 's' : ''}`}
+          <h1 className="font-display text-xl font-semibold text-text-primary">Dashboard</h1>
+          <p className="eyebrow mt-1 opacity-50">
+            {runList.length === 0 ? 'no runs yet' : `${runList.length} total run${runList.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <Button onClick={() => navigate('/run/new')} size="md">
@@ -48,8 +48,8 @@ export function Dashboard() {
               <Activity className="h-4 w-4 text-accent" />
             </div>
             <div>
-              <p className="text-xl font-bold text-text-primary">{active.length}</p>
-              <p className="text-xs text-text-muted">Active</p>
+              <p className="text-xl font-bold font-display text-text-primary">{active.length}</p>
+              <p className="eyebrow opacity-50">active</p>
             </div>
           </CardContent>
         </Card>
@@ -59,8 +59,8 @@ export function Dashboard() {
               <CheckCircle2 className="h-4 w-4 text-success" />
             </div>
             <div>
-              <p className="text-xl font-bold text-text-primary">{completed.length}</p>
-              <p className="text-xs text-text-muted">Completed</p>
+              <p className="text-xl font-bold font-display text-text-primary">{completed.length}</p>
+              <p className="eyebrow opacity-50">completed</p>
             </div>
           </CardContent>
         </Card>
@@ -70,8 +70,8 @@ export function Dashboard() {
               <AlertCircle className="h-4 w-4 text-error" />
             </div>
             <div>
-              <p className="text-xl font-bold text-text-primary">{errored.length}</p>
-              <p className="text-xs text-text-muted">Failed</p>
+              <p className="text-xl font-bold font-display text-text-primary">{errored.length}</p>
+              <p className="eyebrow opacity-50">failed</p>
             </div>
           </CardContent>
         </Card>
@@ -83,9 +83,9 @@ export function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2, delay: 0.1 }}
         >
-          <h2 className="text-xs font-semibold text-accent uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h2 className="eyebrow mb-3 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-slow" />
-            Active
+            // active
           </h2>
           <div className="space-y-2">
             {active.map((run, i) => <RunCard key={run.run_id} run={run} index={i} />)}
@@ -100,9 +100,9 @@ export function Dashboard() {
           transition={{ duration: 0.2, delay: 0.15 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-text-muted uppercase tracking-widest flex items-center gap-2">
+            <h2 className="eyebrow flex items-center gap-2 opacity-50">
               <Clock className="h-3 w-3" />
-              History
+              // history
             </h2>
             <Button variant="ghost" size="sm" onClick={clearRuns} className="text-text-dim hover:text-error">
               <Trash2 className="h-3 w-3" />
@@ -124,10 +124,10 @@ export function Dashboard() {
           transition={{ duration: 0.25, delay: 0.1 }}
           className="flex flex-col items-center justify-center py-20 text-center"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10 border border-accent/20 mb-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/10 to-violet/10 border border-accent/20 mb-4">
             <Play className="h-6 w-6 text-accent" />
           </div>
-          <h3 className="text-base font-semibold text-text-primary mb-1">No runs yet</h3>
+          <h3 className="font-display text-base font-semibold text-text-primary mb-1">No runs yet</h3>
           <p className="text-sm text-text-muted mb-5 max-w-xs">
             Launch your first crew run to get started.
           </p>

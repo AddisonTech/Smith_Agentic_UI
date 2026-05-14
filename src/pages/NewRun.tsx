@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Play, ChevronRight, Link, Cpu } from 'lucide-react'
+import { Play, ChevronRight, Cpu } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Label } from '../components/ui/label'
 import { Textarea } from '../components/ui/textarea'
@@ -71,8 +71,8 @@ export function NewRun() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
       >
-        <h1 className="text-xl font-semibold text-text-primary">New Run</h1>
-        <p className="text-sm text-text-muted mt-0.5">Configure and launch a crew run.</p>
+        <h1 className="font-display text-xl font-semibold text-text-primary">New Run</h1>
+        <p className="eyebrow mt-1 opacity-50">configure and launch a crew run</p>
       </motion.div>
 
       <motion.div
@@ -94,7 +94,7 @@ export function NewRun() {
               if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit()
             }}
           />
-          <p className="text-xs text-text-dim">Ctrl+Enter to launch</p>
+          <p className="eyebrow opacity-40">ctrl+enter to launch</p>
         </div>
 
         <div className="space-y-2">
@@ -108,12 +108,12 @@ export function NewRun() {
                 className={cn(
                   'flex flex-col gap-1 p-3 rounded-xl border text-left transition-all duration-150',
                   crew === c
-                    ? 'border-accent/50 bg-accent/10 text-text-primary'
-                    : 'border-border bg-surface hover:border-border-bright hover:bg-elevated text-text-muted'
+                    ? 'border-accent/40 bg-accent/8 text-text-primary shadow-[0_0_12px_rgba(34,211,238,0.12)]'
+                    : 'border-border bg-surface/50 hover:border-border-bright hover:bg-elevated text-text-muted'
                 )}
               >
                 <span className="text-base">{CREW_ICONS[c]}</span>
-                <span className="text-xs font-semibold capitalize">{c}</span>
+                <span className="text-xs font-semibold font-mono capitalize">{c}</span>
                 <span className="text-[10px] leading-snug opacity-70 line-clamp-2">{CREW_DESCRIPTIONS[c]}</span>
               </button>
             ))}
@@ -139,17 +139,14 @@ export function NewRun() {
           </div>
 
           <div className="space-y-2">
-            <Label>
-              <Link className="inline h-3 w-3 mr-1" />
-              Chain
-            </Label>
+            <Label>Chain</Label>
             <button
               type="button"
               onClick={() => setChain(!chain)}
               className={cn(
                 'flex h-9 w-full items-center justify-between rounded-lg border px-3 text-sm transition-all duration-150',
                 chain
-                  ? 'border-accent/50 bg-accent/10 text-accent'
+                  ? 'border-accent/40 bg-accent/8 text-accent'
                   : 'border-border bg-elevated text-text-muted hover:border-border-bright hover:text-text-primary'
               )}
             >
@@ -160,7 +157,7 @@ export function NewRun() {
               )}>
                 <div className={cn(
                   'h-3.5 w-3.5 rounded-full transition-all duration-200',
-                  chain ? 'bg-white' : 'bg-text-dim'
+                  chain ? 'bg-base' : 'bg-text-dim'
                 )} />
               </div>
             </button>
@@ -176,7 +173,7 @@ export function NewRun() {
           >
             <Card className="border-accent/20 bg-accent/5">
               <CardContent className="py-3 px-4">
-                <div className="flex items-center gap-2 text-xs text-text-muted">
+                <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
                   <span className="text-accent font-medium">{crew}</span>
                   <ChevronRight className="h-3 w-3 text-text-dim" />
                   <span>safety</span>
@@ -210,7 +207,7 @@ export function NewRun() {
           >
             {loading ? (
               <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-base/30 border-t-base" />
                 Launching...
               </>
             ) : (

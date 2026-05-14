@@ -31,19 +31,20 @@ export function Terminal({ lines, running, className }: TerminalProps) {
       ref={containerRef}
       onScroll={handleScroll}
       className={cn(
-        'relative overflow-y-auto bg-[#060610] rounded-xl border border-border',
+        'relative overflow-y-auto bg-[#04040c] rounded-xl border border-border',
         'terminal-text text-text-primary',
+        'shadow-[0_12px_40px_rgba(0,0,0,0.35)]',
         className
       )}
     >
-      <div className="sticky top-0 z-10 flex items-center gap-1.5 px-4 py-2.5 border-b border-border bg-[#060610]">
+      <div className="sticky top-0 z-10 flex items-center gap-2 px-4 py-3 border-b border-border bg-[#04040c]/95 backdrop-blur-sm">
         <span className="h-2.5 w-2.5 rounded-full bg-error/70" />
         <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
         <span className="h-2.5 w-2.5 rounded-full bg-success/70" />
-        <span className="ml-2 text-xs text-text-dim">output</span>
+        <span className="ml-3 eyebrow opacity-50">output</span>
         {running && (
-          <span className="ml-auto flex items-center gap-1.5 text-xs text-running">
-            <span className="h-1.5 w-1.5 rounded-full bg-running animate-pulse-slow" />
+          <span className="ml-auto flex items-center gap-1.5 eyebrow text-accent">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-slow" />
             running
           </span>
         )}
@@ -77,7 +78,7 @@ export function Terminal({ lines, running, className }: TerminalProps) {
         </AnimatePresence>
         {running && (
           <div className="flex items-center gap-1 pt-1">
-            <span className="text-running animate-blink">_</span>
+            <span className="text-accent animate-blink font-bold">_</span>
           </div>
         )}
         <div ref={bottomRef} />
