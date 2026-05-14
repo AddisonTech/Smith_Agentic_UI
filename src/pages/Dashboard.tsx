@@ -44,8 +44,8 @@ export function Dashboard() {
       >
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-running/10 border border-running/20">
-              <Activity className="h-4 w-4 text-running" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 border border-accent/20">
+              <Activity className="h-4 w-4 text-accent" />
             </div>
             <div>
               <p className="text-xl font-bold text-text-primary">{active.length}</p>
@@ -83,8 +83,8 @@ export function Dashboard() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2, delay: 0.1 }}
         >
-          <h2 className="text-xs font-semibold text-running uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-running animate-pulse-slow" />
+          <h2 className="text-xs font-semibold text-accent uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-slow" />
             Active
           </h2>
           <div className="space-y-2">
