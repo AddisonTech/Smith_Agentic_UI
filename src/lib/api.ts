@@ -1,4 +1,16 @@
-const BASE = 'http://localhost:8765'
+declare global {
+  interface Window { SMITH_AGENTIC_URL?: string }
+}
+
+const BASE = (
+  (typeof window !== 'undefined' && window.SMITH_AGENTIC_URL) ||
+  import.meta.env.VITE_SMITH_AGENTIC_URL ||
+  'http://localhost:8765'
+).replace(/\/$/, '')
+
+function wsBase(): string {
+  return BASE.replace(/^http/, 'ws')
+}
 
 export interface SystemStatus {
   status: string
@@ -15,7 +27,7 @@ export interface RunRequest {
 
 export interface RunStatus {
   run_id: string
-  status: 'starting' | 'running' | 'completed' | 'error'
+  status: 'starting' | 'running' | 'completed' | 'error' | 'cancelled'
   output: string[]
   files: string[]
 }
@@ -61,12 +73,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 export const api = {
-  status:       ()           => get<SystemStatus>('/api/status'),
-  models:       ()           => get<{ models: string[] }>('/api/models'),
-  crewDefaults: ()           => get<Record<string, string>>('/api/crew-defaults'),
-  startRun:     (r: RunRequest) => post<{ run_id: string }>('/api/run', r),
-  getRun:       (id: string) => get<RunStatus>(`/api/run/${id}`),
-  listOutputs:  ()           => get<{ files: OutputFile[] }>('/api/outputs'),
-  readOutput:   (path: string) => fetch(`${BASE}/api/outputs/${path}`).then(r => r.text()),
-  wsUrl:        (id: string) => `ws://localhost:8765/ws/${id}`,
+  status:       ()                 => get<SystemStatus>('/api/status'),
+  models:       ()                 => get<{ models: string[] }>('/api/models'),
+  crewDefaults: ()                 => get<Record<string, string>>('/api/crew-defaults'),
+  startRun:     (r: RunRequest)    => post<{ run_id: string }>('/api/run', r),
+  getRun:       (id: string)       => get<RunStatus>(`/api/run/${id}`),
+  cancelRun:    (id: string)       => post<{ run_id: string; status: string }>(`/api/run/${id}/cancel`, {}),
+  listOutputs:  ()                 => get<{ files: OutputFile[] }>('/api/outputs'),
+  readOutput:   (path: string)     => fetch(`${BASE}/api/outputs/${path}`).then(r => r.text()),
+  wsUrl:        (id: string)       => `${wsBase()}/ws/${id}`,
 }

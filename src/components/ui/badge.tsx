@@ -11,6 +11,7 @@ const badgeVariants = cva(
         running:   'bg-running/10 border-running/30 text-running',
         completed: 'bg-success/10 border-success/30 text-success',
         error:     'bg-error/10 border-error/30 text-error',
+        cancelled: 'bg-text-dim/10 border-text-dim/30 text-text-muted',
         default:   'bg-elevated border-border text-text-muted',
       },
     },

@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, FileText, Download, RefreshCw } from 'lucide-react'
+import { ArrowLeft, FileText, Download, RefreshCw, Square } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -16,7 +16,11 @@ const STATUS_VARIANT = {
   running:   'running',
   completed: 'completed',
   error:     'error',
+  cancelled: 'error',
 } as const
+
+const MAX_RECONNECTS = 5
+const RECONNECT_DELAY_MS = 2000
 
 export function RunDetail() {
   const { id }     = useParams<{ id: string }>()
@@ -27,16 +31,29 @@ export function RunDetail() {
   const finalizeRun  = useStore((s) => s.finalizeRun)
 
   const run = id ? runs[id] : undefined
-  const [wsError, setWsError] = useState('')
+  const [wsError, setWsError]       = useState('')
+  const [cancelling, setCancelling] = useState(false)
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileContent, setFileContent]   = useState<string>('')
   const [fileLoading, setFileLoading]   = useState(false)
 
+  const wsRef          = useRef<WebSocket | null>(null)
+  const attemptRef     = useRef(0)
+  const retryTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const unmountedRef   = useRef(false)
+
   const isActive = run?.status === 'running' || run?.status === 'starting'
 
   const connectWs = useCallback(() => {
-    if (!id) return
+    if (!id || unmountedRef.current) return
+
     const ws = new WebSocket(api.wsUrl(id))
+    wsRef.current = ws
+
+    ws.onopen = () => {
+      attemptRef.current = 0
+      setWsError('')
+    }
 
     ws.onmessage = (e) => {
       try {
@@ -52,23 +69,57 @@ export function RunDetail() {
       } catch {}
     }
 
-    ws.onerror = () => setWsError('WebSocket connection failed.')
-    return ws
+    ws.onclose = () => {
+      if (unmountedRef.current) return
+      const currentRun = useStore.getState().runs[id]
+      if (currentRun?.status === 'running' || currentRun?.status === 'starting') {
+        if (attemptRef.current < MAX_RECONNECTS) {
+          attemptRef.current += 1
+          retryTimerRef.current = setTimeout(connectWs, RECONNECT_DELAY_MS)
+        } else {
+          setWsError(`Connection lost after ${MAX_RECONNECTS} retries.`)
+        }
+      }
+    }
+
+    ws.onerror = () => {
+      ws.close()
+    }
   }, [id, appendOutput, upsertRun, finalizeRun])
 
   useEffect(() => {
+    unmountedRef.current = false
     if (!id) return
+
     if (!run) {
       api.getRun(id)
         .then((data) => upsertRun(data))
         .catch(() => {})
     }
+
     const storedRun = runs[id]
     if (!storedRun || storedRun.status === 'starting' || storedRun.status === 'running') {
-      const ws = connectWs()
-      return () => ws?.close()
+      connectWs()
+    }
+
+    return () => {
+      unmountedRef.current = true
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
+      wsRef.current?.close()
     }
   }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCancel = async () => {
+    if (!id) return
+    setCancelling(true)
+    try {
+      await api.cancelRun(id)
+    } catch (e: unknown) {
+      setWsError(e instanceof Error ? e.message : 'Failed to cancel run.')
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   const loadFile = async (path: string) => {
     setSelectedFile(path)
@@ -84,7 +135,7 @@ export function RunDetail() {
   }
 
   const downloadFile = (path: string) => {
-    window.open(`http://localhost:8765/api/outputs/${path}`, '_blank')
+    window.open(`${api.wsUrl('').replace('ws', 'http').replace('/ws/', '')}/api/outputs/${path}`, '_blank')
   }
 
   if (!run) {
@@ -130,6 +181,18 @@ export function RunDetail() {
           <p className="text-sm text-text-primary mt-1 leading-snug">{run.goal}</p>
           <p className="eyebrow mt-0.5 opacity-30">{run.run_id}</p>
         </div>
+
+        {isActive && (
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={handleCancel}
+            disabled={cancelling}
+          >
+            <Square className="h-3.5 w-3.5" />
+            {cancelling ? 'Cancelling...' : 'Cancel'}
+          </Button>
+        )}
       </motion.div>
 
       {wsError && (
@@ -139,8 +202,8 @@ export function RunDetail() {
           className="rounded-lg border border-error/30 bg-error/5 px-4 py-2.5 text-sm text-error flex items-center gap-2"
         >
           <RefreshCw
-            className="h-3.5 w-3.5 cursor-pointer hover:text-error/70"
-            onClick={() => { setWsError(''); connectWs() }}
+            className="h-3.5 w-3.5 cursor-pointer hover:text-error/70 shrink-0"
+            onClick={() => { setWsError(''); attemptRef.current = 0; connectWs() }}
           />
           {wsError}
         </motion.div>

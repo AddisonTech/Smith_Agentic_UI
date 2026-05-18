@@ -17,6 +17,7 @@ const STATUS_VARIANT = {
   running:   'running',
   completed: 'completed',
   error:     'error',
+  cancelled: 'cancelled',
 } as const
 
 const CREW_COLORS: Record<string, string> = {

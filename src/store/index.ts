@@ -5,7 +5,7 @@ export interface Run {
   run_id:    string
   crew:      string
   goal:      string
-  status:    'starting' | 'running' | 'completed' | 'error'
+  status:    'starting' | 'running' | 'completed' | 'error' | 'cancelled'
   output:    string[]
   files:     string[]
   startedAt: number
