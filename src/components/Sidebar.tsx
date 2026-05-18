@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { LayoutDashboard, Play, FolderOpen, Zap } from 'lucide-react'
+import { LayoutDashboard, Play, FolderOpen } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useStore } from '../store'
 
@@ -17,9 +17,10 @@ export function Sidebar() {
   return (
     <aside className="relative z-10 flex flex-col w-56 bg-surface/80 backdrop-blur-sm border-r border-border h-full shrink-0">
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent/20 to-violet/20 border border-accent/30">
-          <Zap className="h-4 w-4 text-accent" />
-        </div>
+        <svg width="28" height="28" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="32" height="32" rx="7" fill="#06060f"/>
+          <text x="16" y="22" textAnchor="middle" fontFamily="'Space Grotesk', 'Inter', system-ui, sans-serif" fontSize="14" fontWeight="700" letterSpacing="-0.5" fill="#22d3ee">SA</text>
+        </svg>
         <span className="font-display text-sm font-semibold tracking-tight">
           Smith<span className="text-text-dim">_</span><span className="gradient-text">Agentic</span>
         </span>
