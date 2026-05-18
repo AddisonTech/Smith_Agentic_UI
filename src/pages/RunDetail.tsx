@@ -10,6 +10,7 @@ import { useStore } from '../store'
 import { api, type WsMessage } from '../lib/api'
 import { duration } from '../lib/utils'
 import { cn } from '../lib/utils'
+import { isDemoRun, runDemoSimulation } from '../lib/demo'
 
 const STATUS_VARIANT = {
   starting:  'starting',
@@ -30,17 +31,21 @@ export function RunDetail() {
   const appendOutput = useStore((s) => s.appendOutput)
   const finalizeRun  = useStore((s) => s.finalizeRun)
 
-  const run = id ? runs[id] : undefined
+  const run              = id ? runs[id] : undefined
+  const updateLastOutput = useStore((s) => s.updateLastOutput)
+
   const [wsError, setWsError]       = useState('')
   const [cancelling, setCancelling] = useState(false)
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileContent, setFileContent]   = useState<string>('')
   const [fileLoading, setFileLoading]   = useState(false)
 
-  const wsRef          = useRef<WebSocket | null>(null)
-  const attemptRef     = useRef(0)
-  const retryTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const unmountedRef   = useRef(false)
+  const wsRef             = useRef<WebSocket | null>(null)
+  const attemptRef        = useRef(0)
+  const retryTimerRef     = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const unmountedRef      = useRef(false)
+  const demoCancelledRef  = useRef(false)
+  const demoStartedRef    = useRef(false)
 
   const isActive = run?.status === 'running' || run?.status === 'starting'
 
@@ -89,7 +94,7 @@ export function RunDetail() {
 
   useEffect(() => {
     unmountedRef.current = false
-    if (!id) return
+    if (!id || isDemoRun(id)) return
 
     if (!run) {
       api.getRun(id)
@@ -109,8 +114,32 @@ export function RunDetail() {
     }
   }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!id || !isDemoRun(id)) return
+    const currentRun = useStore.getState().runs[id]
+    if (!currentRun || (currentRun.status !== 'starting' && currentRun.status !== 'running')) return
+    if (demoStartedRef.current) return
+    demoStartedRef.current = true
+    demoCancelledRef.current = false
+
+    runDemoSimulation(id, currentRun.crew, {
+      appendOutput,
+      updateLastOutput,
+      upsertRun,
+      finalizeRun,
+      isCancelled: () => demoCancelledRef.current,
+    }).catch(() => {})
+
+    return () => { demoCancelledRef.current = true }
+  }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleCancel = async () => {
     if (!id) return
+    if (isDemoRun(id)) {
+      demoCancelledRef.current = true
+      finalizeRun(id, 'cancelled', [])
+      return
+    }
     setCancelling(true)
     try {
       await api.cancelRun(id)
@@ -123,6 +152,15 @@ export function RunDetail() {
 
   const loadFile = async (path: string) => {
     setSelectedFile(path)
+    if (id && isDemoRun(id)) {
+      const outputLines = run?.output ?? []
+      const outputIdx = outputLines.findIndex(l => l.includes('run complete'))
+      const content = outputIdx >= 0
+        ? outputLines.slice(outputIdx + 1).join('\n')
+        : outputLines.slice(-30).join('\n')
+      setFileContent(content)
+      return
+    }
     setFileLoading(true)
     try {
       const text = await api.readOutput(path)
@@ -135,6 +173,7 @@ export function RunDetail() {
   }
 
   const downloadFile = (path: string) => {
+    if (!id || isDemoRun(id)) return
     window.open(`${api.wsUrl('').replace('ws', 'http').replace('/ws/', '')}/api/outputs/${path}`, '_blank')
   }
 

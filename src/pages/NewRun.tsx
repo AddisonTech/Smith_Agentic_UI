@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Play, ChevronRight, Cpu } from 'lucide-react'
+import { Play, ChevronRight, Cpu, FlaskConical } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Label } from '../components/ui/label'
 import { Textarea } from '../components/ui/textarea'
@@ -10,6 +10,7 @@ import { Card, CardContent } from '../components/ui/card'
 import { cn } from '../lib/utils'
 import { api, CREWS, CREW_DESCRIPTIONS, type CrewName } from '../lib/api'
 import { useStore } from '../store'
+import { DEMO_PRESETS, generateDemoRunId } from '../lib/demo'
 
 const CREW_ICONS: Record<CrewName, string> = {
   default: '⚙',
@@ -44,6 +45,14 @@ export function NewRun() {
   const submit = async () => {
     if (!goal.trim()) { setError('Goal is required.'); return }
     setError('')
+
+    if (system.demoMode) {
+      const run_id = generateDemoRunId(crew)
+      upsertRun({ run_id, crew, goal: goal.trim(), status: 'starting', output: [], files: [], startedAt: Date.now() })
+      navigate(`/run/${run_id}`)
+      return
+    }
+
     setLoading(true)
     try {
       const { run_id } = await api.startRun({
@@ -74,6 +83,44 @@ export function NewRun() {
         <h1 className="font-display text-xl font-semibold text-text-primary">New Run</h1>
         <p className="eyebrow mt-1 opacity-50">configure and launch a crew run</p>
       </motion.div>
+
+      {system.demoMode && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Card className="border-violet/20 bg-violet/5">
+            <CardContent className="py-3 px-4">
+              <div className="flex items-center gap-2 mb-3">
+                <FlaskConical className="h-3.5 w-3.5 text-violet" />
+                <span className="eyebrow text-violet">demo presets</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {DEMO_PRESETS.map((p) => (
+                  <button
+                    key={p.crew}
+                    type="button"
+                    onClick={() => {
+                      setGoal(p.goal)
+                      setCrew(p.crew as CrewName)
+                    }}
+                    className={cn(
+                      'flex flex-col gap-1 p-3 rounded-xl border text-left transition-all duration-150',
+                      crew === p.crew && goal === p.goal
+                        ? 'border-violet/40 bg-violet/10 text-text-primary shadow-[0_0_12px_rgba(167,139,250,0.12)]'
+                        : 'border-border bg-surface/50 hover:border-violet/30 hover:bg-elevated text-text-muted'
+                    )}
+                  >
+                    <span className="text-xs font-semibold font-mono text-violet">{p.label}</span>
+                    <span className="text-[10px] leading-snug opacity-70">{p.description}</span>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 8 }}

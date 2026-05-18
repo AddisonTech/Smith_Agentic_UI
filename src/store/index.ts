@@ -18,17 +18,19 @@ interface SystemState {
   models:       string[]
   crewDefaults: Record<string, string>
   lastChecked:  number
+  demoMode:     boolean
 }
 
 interface Store {
   system: SystemState
   runs:   Record<string, Run>
 
-  setSystem:     (s: Partial<SystemState>) => void
-  upsertRun:     (run: Partial<Run> & { run_id: string }) => void
-  appendOutput:  (run_id: string, line: string) => void
-  finalizeRun:   (run_id: string, status: string, files: string[]) => void
-  clearRuns:     () => void
+  setSystem:        (s: Partial<SystemState>) => void
+  upsertRun:        (run: Partial<Run> & { run_id: string }) => void
+  appendOutput:     (run_id: string, line: string) => void
+  updateLastOutput: (run_id: string, line: string) => void
+  finalizeRun:      (run_id: string, status: string, files: string[]) => void
+  clearRuns:        () => void
 }
 
 export const useStore = create<Store>()(
@@ -40,6 +42,7 @@ export const useStore = create<Store>()(
         models:       [],
         crewDefaults: {},
         lastChecked:  0,
+        demoMode:     false,
       },
       runs: {},
 
@@ -72,6 +75,15 @@ export const useStore = create<Store>()(
               [run_id]: { ...existing, output: [...existing.output, line] },
             },
           }
+        }),
+
+      updateLastOutput: (run_id, line) =>
+        set((state) => {
+          const existing = state.runs[run_id]
+          if (!existing || existing.output.length === 0) return state
+          const output = [...existing.output]
+          output[output.length - 1] = line
+          return { runs: { ...state.runs, [run_id]: { ...existing, output } } }
         }),
 
       finalizeRun: (run_id, status, files) =>

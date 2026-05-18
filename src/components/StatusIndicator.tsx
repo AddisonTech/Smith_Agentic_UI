@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Wifi, WifiOff, Cpu, Terminal } from 'lucide-react'
+import { Wifi, WifiOff, Cpu, Terminal, FlaskConical, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '../lib/api'
 import { useStore } from '../store'
+import { makeSeedRuns } from '../lib/demo'
 import { cn } from '../lib/utils'
 
 const START_CMD = 'cd Smith_Agentic && python ui/server.py'
 
 export function StatusIndicator() {
-  const { system, setSystem } = useStore()
+  const { system, setSystem, upsertRun } = useStore()
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -33,8 +34,38 @@ export function StatusIndicator() {
     } catch {}
   }
 
+  const activateDemo = () => {
+    const seeds = makeSeedRuns()
+    seeds.forEach(r => upsertRun(r))
+    setSystem({ demoMode: true })
+  }
+
+  const exitDemo = () => setSystem({ demoMode: false })
+
   return (
     <div className="flex items-center gap-3">
+      <AnimatePresence>
+        {system.demoMode && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.15 }}
+            className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border bg-warning/8 border-warning/20 text-warning"
+          >
+            <FlaskConical className="h-3 w-3" />
+            simulated
+            <button
+              onClick={exitDemo}
+              className="ml-0.5 opacity-60 hover:opacity-100 transition-opacity"
+              aria-label="exit demo mode"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait">
         <motion.div
           key={system.online ? 'online' : 'offline'}
@@ -59,23 +90,34 @@ export function StatusIndicator() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {!system.online && (
-          <motion.button
+        {!system.online && !system.demoMode && (
+          <motion.div
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -6 }}
             transition={{ duration: 0.15 }}
-            onClick={copyCommand}
-            className={cn(
-              'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border transition-all duration-150',
-              copied
-                ? 'bg-success/10 border-success/30 text-success'
-                : 'bg-accent/10 border-accent/30 text-accent hover:bg-accent/20'
-            )}
+            className="flex items-center gap-2"
           >
-            <Terminal className="h-3 w-3" />
-            {copied ? 'copied!' : 'go online'}
-          </motion.button>
+            <button
+              onClick={copyCommand}
+              className={cn(
+                'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border transition-all duration-150',
+                copied
+                  ? 'bg-success/10 border-success/30 text-success'
+                  : 'bg-accent/10 border-accent/30 text-accent hover:bg-accent/20'
+              )}
+            >
+              <Terminal className="h-3 w-3" />
+              {copied ? 'copied!' : 'go online'}
+            </button>
+            <button
+              onClick={activateDemo}
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium border bg-violet/10 border-violet/30 text-violet hover:bg-violet/20 transition-all duration-150"
+            >
+              <FlaskConical className="h-3 w-3" />
+              demo mode
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 
