@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { LayoutDashboard, Play, FolderOpen } from 'lucide-react'
+import { LayoutDashboard, Play, FolderOpen, Sparkles } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useStore } from '../store'
 
 const NAV = [
-  { to: '/',         icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/run/new',  icon: Play,            label: 'New Run'   },
-  { to: '/files',    icon: FolderOpen,      label: 'Files'     },
+  { to: '/',             icon: LayoutDashboard, label: 'Dashboard'  },
+  { to: '/run/new',      icon: Play,            label: 'New Run'    },
+  { to: '/marketplace',  icon: Sparkles,        label: 'Templates'  },
+  { to: '/files',        icon: FolderOpen,      label: 'Files'      },
 ]
 
 export function Sidebar() {

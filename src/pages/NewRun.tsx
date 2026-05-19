@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Play, ChevronRight, Cpu, FlaskConical } from 'lucide-react'
 import { Button } from '../components/ui/button'
@@ -23,6 +23,7 @@ const CREW_ICONS: Record<CrewName, string> = {
 
 export function NewRun() {
   const navigate    = useNavigate()
+  const location    = useLocation()
   const { system, setSystem, upsertRun } = useStore()
 
   const [goal,     setGoal]     = useState('')
@@ -31,6 +32,12 @@ export function NewRun() {
   const [chain,    setChain]    = useState(false)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
+
+  useEffect(() => {
+    const state = location.state as { goal?: string; crew?: CrewName } | null
+    if (state?.goal) setGoal(state.goal)
+    if (state?.crew && (CREWS as readonly string[]).includes(state.crew)) setCrew(state.crew)
+  }, [location.state])
 
   useEffect(() => {
     const load = async () => {
