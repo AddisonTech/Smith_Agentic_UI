@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# Smith Agentic UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React dashboard for [Smith_Agentic](https://github.com/AddisonTech/Smith_Agentic) -- a multi-agent task execution framework built on CrewAI and FastAPI.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Provides a real-time interface for dispatching, monitoring, and reviewing agentic task runs. Connects to the Smith_Agentic backend over WebSocket and REST.
 
-## React Compiler
+**Pages**
+- **Dashboard** -- live run status, recent activity feed
+- **New Run** -- configure and dispatch agent crews from saved templates
+- **Run Detail** -- streaming task output, step-by-step crew execution log
+- **Files** -- browse and download artifacts produced by runs
+- **Marketplace** -- browse and import task templates
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+- React 19 + TypeScript
+- Tailwind CSS + shadcn/ui primitives
+- Framer Motion for transitions
+- Zustand for client state
+- eact-use-websocket for live run streaming
+- Vite
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+`ash
+npm install
+npm run dev
+`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Requires the Smith_Agentic FastAPI backend running on localhost:8000. See [Smith_Agentic](https://github.com/AddisonTech/Smith_Agentic) for backend setup.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Related
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- [Smith_Agentic](https://github.com/AddisonTech/Smith_Agentic) -- FastAPI backend, CrewAI crews, REST + WebSocket API
+- [Smith_Agentic_MCP](https://github.com/AddisonTech/Smith_Agentic_MCP) -- MCP server exposing the agent framework as tools
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## License
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+MIT
